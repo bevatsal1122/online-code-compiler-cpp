@@ -14,7 +14,6 @@ const runFile = (filePath) => {
             stderr && reject({stderr});
             resolve(stdout);            
         })
-
     });
 }
 
