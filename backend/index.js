@@ -1,8 +1,10 @@
 const express = require("express");
+const cors = require('cors');
 const { scanFile } = require('./scanFile');
 const { runFile } = require('./runFile');
 const app = express();
 
+app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
@@ -11,17 +13,17 @@ app.get("/", (req, res) => {
 });
 
 app.post("/run", async (req, res) => {
-    const { language="cpp", code } = req.body;
+    const { language="cpp", prbName, code } = req.body;
     if (code === undefined)
     {
         return res.status(400).json({transferStatus: false, errorMessage: "Null Code"});
     }
     try {
     const filePath = await scanFile(language, code);
-    const userOutput = await runFile(filePath);
+    const userOutput = await runFile(filePath, prbName);
     return res.json({filePath, userOutput});
     } catch(err) {
-        res.status(500).json({err});
+        res.status(400).json(err.stderr);
     }
 });
 
